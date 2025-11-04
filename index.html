@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Selamat Ulang Tahun 🎉</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      height:100vh;
+      font-family:'Poppins',sans-serif;
+      background:linear-gradient(135deg,#f5f376,#e79ec3);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .card{
+      background:rgba(255,255,255,0.9);
+      padding:40px;
+      border-radius:16px;
+      text-align:center;
+      box-shadow:0 10px 30px rgba(0,0,0,0.1);
+      max-width:400px;
+      width:90%;
+      transition:all .4s ease;
+    }
+    button{
+      background:linear-gradient(90deg,#ff9aae,#ffd36b);
+      border:none;
+      border-radius:999px;
+      padding:12px 24px;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+      transition:transform .2s;
+    }
+    button:hover{transform:scale(1.05)}
+    input{
+      width:100%;
+      padding:10px;
+      border:2px solid #ddd;
+      border-radius:8px;
+      font-size:16px;
+      margin-bottom:16px;
+      outline:none;
+      transition:border .2s;
+    }
+    input:focus{border-color:#ff8ab6}
+    h1{margin-bottom:12px}
+    .hidden{display:none}
+    .happy{
+      font-size:28px;
+      font-weight:700;
+      color:#5a2a82;
+      opacity:0;
+      transform:translateY(20px);
+      transition:all .5s ease;
+    }
+    .happy.show{
+      opacity:1;
+      transform:translateY(0);
+    }
+    canvas{
+      position:fixed;
+      top:0;left:0;
+      width:100%;height:100%;
+      pointer-events:none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+
+  <div class="card" id="card">
+    <h1 id="title">Hai kamu 🎁</h1>
+    <p id="subtitle">Tekan tombol dibawah ini untuk kejutan</p><br><br>
+    <button id="startBtn">Click Here!</button>
+
+    <div id="nameForm" class="hidden">
+      <p>Masukkan nama kamu dulu 👇</p>
+      <input type="text" id="nameInput" placeholder="Nama kamu...">
+      <button id="okBtn">Lanjut!</button>
+    </div>
+
+    <h2 class="happy" id="greet">Selamat ulang tahun 🎉</h2>
+  </div>
+
+  <!-- 🎶 Tambahkan elemen audio -->
+  <audio id="song" preload="auto">
+    <source src="ssstik.io_1760402923300.m4a" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const startBtn = document.getElementById('startBtn');
+    const nameForm = document.getElementById('nameForm');
+    const okBtn = document.getElementById('okBtn');
+    const nameInput = document.getElementById('nameInput');
+    const greet = document.getElementById('greet');
+    const title = document.getElementById('title');
+    const subtitle = document.getElementById('subtitle');
+    const song = document.getElementById('song');
+
+    startBtn.addEventListener('click', () => {
+      startBtn.classList.add('hidden');
+      title.textContent = "Sebentar...";
+      subtitle.textContent = "Isi nama kamu dulu ya ✨";
+      nameForm.classList.remove('hidden');
+    });
+
+    okBtn.addEventListener('click', () => {
+      const nama = nameInput.value.trim();
+      if(!nama){
+        alert("Isi dulu namanya ya 😅");
+        return;
+      }
+      nameForm.classList.add('hidden');
+      title.textContent = "Surprise buat kamu!";
+      subtitle.textContent = "";
+      greet.innerHTML = `Selamat ulang tahun, <br>${nama}! 🎉`;
+      greet.classList.add('show');
+
+      // mulai confetti + musik
+      confetti();
+      playSong();
+    });
+
+    function playSong(){
+      song.volume = 0.6;
+      song.play().catch(() => {
+        alert("Klik lagi tombol 'Lanjut!' untuk memutar musik 🎵");
+      });
+    }
+
+    // 🎊 Confetti animasi simple
+    function confetti(){
+      const canvas = document.getElementById('confetti');
+      const ctx = canvas.getContext('2d');
+      let W = canvas.width = window.innerWidth;
+      let H = canvas.height = window.innerHeight;
+      const particles = [];
+      const colors = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#C780FF'];
+
+      for(let i=0;i<150;i++){
+        particles.push({
+          x:Math.random()*W,
+          y:Math.random()*H - H,
+          r:Math.random()*8+4,
+          d:Math.random()*150+50,
+          color:colors[Math.floor(Math.random()*colors.length)],
+          tilt:Math.random()*10 - 10
+        });
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+        for(let p of particles){
+          ctx.beginPath();
+          ctx.fillStyle=p.color;
+          ctx.fillRect(p.x,p.y,p.r,p.r);
+          ctx.fill();
+        }
+        update();
+        requestAnimationFrame(draw);
+      }
+
+      function update(){
+        for(let p of particles){
+          p.y += Math.cos(p.d)+2;
+          p.x += Math.sin(p.d);
+          if(p.y>H){
+            p.y = -10;
+            p.x = Math.random()*W;
+          }
+        }
+      }
+      draw();
+    }
+  </script>
+</body>
+</html>
